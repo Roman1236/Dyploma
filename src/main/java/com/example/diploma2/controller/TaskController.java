@@ -1,16 +1,16 @@
 package com.example.diploma2.controller;
 
-import com.example.diploma2.model.PrioritizationResult;
 import com.example.diploma2.model.Task;
 import com.example.diploma2.service.PrioritizationService;
 import com.example.diploma2.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/tasks")
+@RequestMapping("/api")
 public class TaskController {
 
     private final TaskService taskService;
@@ -22,17 +22,16 @@ public class TaskController {
         this.prioritizationService = prioritizationService;
     }
 
-    @GetMapping
-    public List<Task> getAllTasks() {
-        return taskService.getAllTasks();
-    }
-
     @PostMapping("/prioritize")
-    public List<PrioritizationResult> prioritizeTasks(@RequestBody List<Task> tasks) {
-        List<PrioritizationResult> results = prioritizationService.prioritizeByValueToCost(tasks);
-        taskService.saveTasks(tasks);
-        return results;
+    public ResponseEntity<List<Task>> prioritizeTasks(@RequestBody List<Task> tasks) {
+        List<Task> prioritizedTasks = prioritizationService.prioritizeValueVsCost(tasks);
+        taskService.saveAllTasks(prioritizedTasks); // Assuming TaskService has a saveAllTasks method
+        return ResponseEntity.ok(prioritizedTasks);
     }
 
-    // Додаткові методи для створення, оновлення і видалення задач
+    @GetMapping("/tasks")
+    public ResponseEntity<List<Task>> getAllTasks() {
+        List<Task> tasks = taskService.getAllTasks();
+        return ResponseEntity.ok(tasks);
+    }
 }

@@ -19,28 +19,9 @@ public class Task {
     private double cost;
 
     @Column(name = "priority")
-    private double priority; // Нове поле для пріоритету
-
-
-
+    private double priority; // New field for priority
 
     public Task() {
-        }
-
-    public void setValue(double value) {
-        this.value = value;
-    }
-
-    public void setCost(double cost) {
-        this.cost = cost;
-    }
-
-    public double getPriority() {
-        return priority;
-    }
-
-    public void setPriority(double priority) {
-        this.priority = priority;
     }
 
     public Task(String name, Double cost, Double value) {
@@ -49,7 +30,8 @@ public class Task {
         this.value = value;
     }
 
-    // Геттери та сеттери для полів
+    // Getters and setters for fields (including priority)
+
     public Long getId() {
         return id;
     }
@@ -80,5 +62,13 @@ public class Task {
 
     public void setValue(Double value) {
         this.value = value;
+    }
+
+    public Double getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Double priority) {
+        this.priority = priority;
     }
 }
