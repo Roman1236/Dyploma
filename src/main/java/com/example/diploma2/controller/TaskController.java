@@ -4,6 +4,7 @@ import com.example.diploma2.model.Task;
 import com.example.diploma2.service.PrioritizationService;
 import com.example.diploma2.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,9 +30,18 @@ public class TaskController {
         return ResponseEntity.ok(prioritizedTasks);
     }
 
-    @GetMapping("/tasks")
+    @GetMapping("/getAllTasks")
     public ResponseEntity<List<Task>> getAllTasks() {
         List<Task> tasks = taskService.getAllTasks();
         return ResponseEntity.ok(tasks);
+    }
+
+    @PostMapping("/tasks")
+    public ResponseEntity<Task> createTask(@RequestBody Task task) {
+        // Handle the creation of the task, e.g., save it to the database
+        Task createdTask = taskService.saveTask(task);
+
+        // Return a response with the created task (you can also include additional data)
+        return new ResponseEntity<>(createdTask, HttpStatus.CREATED);
     }
 }
