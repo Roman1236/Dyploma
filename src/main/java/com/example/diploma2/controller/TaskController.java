@@ -29,6 +29,22 @@ public class TaskController {
         taskService.saveAllTasks(prioritizedTasks); // Assuming TaskService has a saveAllTasks method
         return ResponseEntity.ok(prioritizedTasks);
     }
+//    @PostMapping("/prioritize")
+//    public ResponseEntity<List<Task>> prioritizeTasks(@RequestBody List<Task> tasks,
+//                                                      @RequestParam String method) {
+//        List<Task> prioritizedTasks;
+//        switch (method) {
+//            case "RICE":
+//                prioritizedTasks = prioritizationService.prioritizeRICE(tasks);
+//                break;
+//            // Інші випадки для різних методів
+//            default:
+//                throw new IllegalArgumentException("Невідомий метод пріоритизації");
+//        }
+//        taskService.saveAllTasks(prioritizedTasks);
+//        return ResponseEntity.ok(prioritizedTasks);
+//    }
+
 
     @GetMapping("/getAllTasks")
     public ResponseEntity<List<Task>> getAllTasks() {
@@ -44,4 +60,5 @@ public class TaskController {
         // Return a response with the created task (you can also include additional data)
         return new ResponseEntity<>(createdTask, HttpStatus.CREATED);
     }
+
 }
