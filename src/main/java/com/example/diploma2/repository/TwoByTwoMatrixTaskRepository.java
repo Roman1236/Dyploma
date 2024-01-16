@@ -7,3 +7,4 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TwoByTwoMatrixTaskRepository extends JpaRepository<TwoByTwoMatrixTask, Long> {
 }
+

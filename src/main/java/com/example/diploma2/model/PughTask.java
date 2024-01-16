@@ -1,6 +1,9 @@
 package com.example.diploma2.model;
 
 import javax.persistence.*;
+import java.util.HashMap;
+import java.util.Map;
+
 @Entity
 @Table(name = "pugh_tasks")
 public class PughTask {
@@ -9,28 +12,19 @@ public class PughTask {
     private Long id;
 
     @Column(name = "name")
-    private String name;
+    private String name; // Added Task Name field
 
-    @Column(name = "criteria1")
-    private double criteria1;
+    @ElementCollection
+    @CollectionTable(name = "pugh_criteria_importance")
+    @MapKeyColumn(name = "criterion")
+    @Column(name = "importance")
+    private Map<String, Double> criteriaImportance = new HashMap<>();
 
-    @Column(name = "criteria2")
-    private double criteria2;
-
-    @Column(name = "criteria3")
-    private double criteria3;
-
-    @Column(name = "criteria4")
-    private double criteria4;
-
-    @Column(name = "criteria5")
-    private double criteria5;
-
-    @Column(name = "criteria6")
-    private double criteria6;
-
-    @Column(name = "criteria7")
-    private double criteria7;
+    @ElementCollection
+    @CollectionTable(name = "pugh_criteria_scores")
+    @MapKeyColumn(name = "criterion")
+    @Column(name = "score")
+    private Map<String, Double> criteriaScores = new HashMap<>();
 
     @Column(name = "total_score")
     private double totalScore;
@@ -51,60 +45,20 @@ public class PughTask {
         this.name = name;
     }
 
-    public double getCriteria1() {
-        return criteria1;
+    public Map<String, Double> getCriteriaImportance() {
+        return criteriaImportance;
     }
 
-    public void setCriteria1(double criteria1) {
-        this.criteria1 = criteria1;
+    public void setCriteriaImportance(Map<String, Double> criteriaImportance) {
+        this.criteriaImportance = criteriaImportance;
     }
 
-    public double getCriteria2() {
-        return criteria2;
+    public Map<String, Double> getCriteriaScores() {
+        return criteriaScores;
     }
 
-    public void setCriteria2(double criteria2) {
-        this.criteria2 = criteria2;
-    }
-
-    public double getCriteria3() {
-        return criteria3;
-    }
-
-    public void setCriteria3(double criteria3) {
-        this.criteria3 = criteria3;
-    }
-
-    public double getCriteria4() {
-        return criteria4;
-    }
-
-    public void setCriteria4(double criteria4) {
-        this.criteria4 = criteria4;
-    }
-
-    public double getCriteria5() {
-        return criteria5;
-    }
-
-    public void setCriteria5(double criteria5) {
-        this.criteria5 = criteria5;
-    }
-
-    public double getCriteria6() {
-        return criteria6;
-    }
-
-    public void setCriteria6(double criteria6) {
-        this.criteria6 = criteria6;
-    }
-
-    public double getCriteria7() {
-        return criteria7;
-    }
-
-    public void setCriteria7(double criteria7) {
-        this.criteria7 = criteria7;
+    public void setCriteriaScores(Map<String, Double> criteriaScores) {
+        this.criteriaScores = criteriaScores;
     }
 
     public double getTotalScore() {
@@ -113,5 +67,16 @@ public class PughTask {
 
     public void setTotalScore(double totalScore) {
         this.totalScore = totalScore;
+    }
+
+    public double calculateTotalScore() {
+        double totalScore = 0;
+        for (Map.Entry<String, Double> entry : criteriaImportance.entrySet()) {
+            String criterion = entry.getKey();
+            double importance = entry.getValue();
+            double score = criteriaScores.getOrDefault(criterion, 0.0);
+            totalScore += importance * score;
+        }
+        return totalScore;
     }
 }

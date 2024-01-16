@@ -1,4 +1,4 @@
-// MainApp.java
+
 package com.example.diploma2.ui;
 
 public class MainApp {

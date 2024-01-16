@@ -50,3 +50,4 @@ public class TwoByTwoMatrixTask {
         this.value = value;
     }
 }
+

@@ -24,5 +24,5 @@ public class TwoByTwoMatrixTaskService {
     public TwoByTwoMatrixTask saveTwoByTwoMatrixTask(TwoByTwoMatrixTask task) {
         return twoByTwoMatrixTaskRepository.save(task);
     }
-    // Додайте інші методи, які вам потрібні
+
 }
