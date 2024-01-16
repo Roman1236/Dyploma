@@ -10,95 +10,149 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class TaskPrioritizationApp {
-    private static List<Task> tasks = new ArrayList<>(); // Store tasks in memory
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Task Prioritization App");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(400, 300);
+public class TaskPrioritizationApp extends JFrame {
+    private List<Task> tasks = new ArrayList<>(); // Store tasks in memory
+    private JPanel drawingPanel;
 
-            // Create a form to input task parameters (name, value, cost)
-            JTextField nameField = new JTextField(20);
-            JTextField valueField = new JTextField(10);
-            JTextField costField = new JTextField(10);
-            JButton addButton = new JButton("Add Task");
+    public TaskPrioritizationApp() {
+        initializeUI();
+    }
 
-            // Create a text area to display tasks and their priorities
-            JTextArea tasksTextArea = new JTextArea();
-            tasksTextArea.setEditable(false);
+    private void initializeUI() {
+        setTitle("Task Prioritization App");
+        setSize(800, 600);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
 
-            // Add an action listener to the "Add Task" button
-            addButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    // Get the input values from the form
-                    String name = nameField.getText();
-                    double value = Double.parseDouble(valueField.getText());
-                    double cost = Double.parseDouble(costField.getText());
+        // Create a form to input task parameters (name, value, cost)
+        JTextField nameField = new JTextField(20);
+        JTextField valueField = new JTextField(10);
+        JTextField costField = new JTextField(10);
+        JButton addButton = new JButton("Add Task");
 
-                    // Create a Task object with the input values
-                    Task newTask = new Task(name, cost, value);
+        // Create a panel for the form components
+        JPanel formPanel = new JPanel(new GridLayout(4, 2));
+        formPanel.add(new JLabel("Name:"));
+        formPanel.add(nameField);
+        formPanel.add(new JLabel("Value:"));
+        formPanel.add(valueField);
+        formPanel.add(new JLabel("Cost:"));
+        formPanel.add(costField);
+        formPanel.add(new JLabel(""));
+        formPanel.add(addButton);
 
-                    // Calculate the priority and set it for the new task
-                    double priority = calculatePriority(newTask);
-                    newTask.setPriority(priority);
+        drawingPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                drawTasks(g);
+            }
+        };
 
-                    // Add the task to the list
-                    tasks.add(newTask);
+        // Create a JScrollPane for the drawing panel
+        JScrollPane drawingScrollPane = new JScrollPane(drawingPanel);
 
-                    // Sort tasks by priority
-                    Collections.sort(tasks, new Comparator<Task>() {
-                        @Override
-                        public int compare(Task task1, Task task2) {
-                            return Double.compare(task2.getPriority(), task1.getPriority());
-                        }
-                    });
+        // Create the main content panel
+        JPanel contentPanel = new JPanel(new BorderLayout());
+        contentPanel.add(formPanel, BorderLayout.NORTH);
+        contentPanel.add(drawingScrollPane, BorderLayout.CENTER);
 
-                    // Update the UI with the sorted task list
-                    tasksTextArea.setText("");
-                    for (int i = 0; i < tasks.size(); i++) {
-                        Task task = tasks.get(i);
-                        tasksTextArea.append((i + 1) + ". Name: " + task.getName() + ", Value: " + task.getValue() +
-                                ", Cost: " + task.getCost() + ", Priority: " + task.getPriority() + "\n");
+        // Add the content panel to the frame
+        getContentPane().add(contentPanel);
+
+        addButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String name = nameField.getText();
+                double value = Double.parseDouble(valueField.getText());
+                double cost = Double.parseDouble(costField.getText());
+
+                Task newTask = new Task(name, cost, value);
+                double priority = calculatePriority(newTask);
+                newTask.setPriority(priority);
+                tasks.add(newTask);
+
+                // Sort tasks by priority
+                Collections.sort(tasks, new Comparator<Task>() {
+                    @Override
+                    public int compare(Task task1, Task task2) {
+                        return Double.compare(task2.getPriority(), task1.getPriority());
                     }
+                });
 
-                    // Clear the input fields
-                    nameField.setText("");
-                    valueField.setText("");
-                    costField.setText("");
-                }
-            });
+                // Clear the input fields
+                nameField.setText("");
+                valueField.setText("");
+                costField.setText("");
 
-            // Create a panel for the form components
-            JPanel formPanel = new JPanel(new GridLayout(4, 2));
-            formPanel.add(new JLabel("Name:"));
-            formPanel.add(nameField);
-            formPanel.add(new JLabel("Value:"));
-            formPanel.add(valueField);
-            formPanel.add(new JLabel("Cost:"));
-            formPanel.add(costField);
-            formPanel.add(new JLabel(""));
-            formPanel.add(addButton);
-
-            // Create a panel for the task list
-            JPanel taskListPanel = new JPanel(new BorderLayout());
-            taskListPanel.setBorder(BorderFactory.createTitledBorder("Tasks"));
-            taskListPanel.add(new JScrollPane(tasksTextArea), BorderLayout.CENTER);
-
-            // Create the main content panel
-            JPanel contentPanel = new JPanel(new BorderLayout());
-            contentPanel.add(formPanel, BorderLayout.NORTH);
-            contentPanel.add(taskListPanel, BorderLayout.CENTER);
-
-            frame.getContentPane().add(contentPanel);
-            frame.setVisible(true);
+                // Repaint the drawing panel to update the graph
+                drawingPanel.repaint();
+            }
         });
     }
 
     // Calculate priority based on your criteria (e.g., value divided by cost)
-    private static double calculatePriority(Task task) {
+    private double calculatePriority(Task task) {
         return task.getValue() / task.getCost();
+    }
+
+    private void drawTasks(Graphics g) {
+        // Clear the panel
+        g.clearRect(0, 0, drawingPanel.getWidth(), drawingPanel.getHeight());
+
+        // Draw axes
+        g.drawLine(50, 30, 50, drawingPanel.getHeight() - 30); // Vertical axis (cost)
+        g.drawLine(50, drawingPanel.getHeight() - 30, drawingPanel.getWidth() - 30, drawingPanel.getHeight() - 30); // Horizontal axis (value)
+
+        // Draw labels for axes
+        g.drawString("cost", 10, drawingPanel.getHeight() - 30);
+        g.drawString("value", drawingPanel.getWidth() - 30, drawingPanel.getHeight() - 10);
+
+        // Draw scale on vertical axis (cost)
+        for (int i = 0; i <= 20; i++) {
+            int y = drawingPanel.getHeight() - 30 - (i * 20); // Calculate Y-coordinate for the scale
+            g.drawLine(45, y, 50, y); // Draw a tick mark
+            g.drawString(String.valueOf(i), 30, y + 5); // Draw the scale label
+        }
+
+        // Draw scale on horizontal axis (value)
+        for (int i = 0; i <= 20; i++) {
+            int x = 50 + (i * 20); // Calculate X-coordinate for the scale
+            g.drawLine(x, drawingPanel.getHeight() - 25, x, drawingPanel.getHeight() - 30); // Draw a tick mark
+            g.drawString(String.valueOf(i), x - 5, drawingPanel.getHeight() - 10); // Draw the scale label
+        }
+
+        // Draw tasks as points on the panel
+        for (int i = 0; i < tasks.size(); i++) {
+            Task task = tasks.get(i);
+            int x = 50 + (int) (task.getValue() * 20); // X-coordinate based on "value"
+            int y = drawingPanel.getHeight() - 30 - (int) (task.getCost() * 20); // Y-coordinate based on "cost"
+
+            // Draw a line from the origin to the task
+            g.setColor(Color.GRAY);
+            g.drawLine(50, drawingPanel.getHeight() - 30, x, y);
+
+            // Draw a larger point to mark the task's position
+            g.setColor(Color.BLUE);
+            g.fillOval(x - 5, y - 5, 10, 10);
+
+            // Draw task name as label
+            g.setColor(Color.BLACK);
+            g.drawString(task.getName(), x, y - 10);
+
+            // Draw priority value as label
+            g.drawString(String.format("%.2f", task.getPriority()), x, y + 20);
+        }
+    }
+
+
+
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            TaskPrioritizationApp app = new TaskPrioritizationApp();
+            app.setVisible(true);
+        });
     }
 }
